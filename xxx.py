@@ -4,7 +4,11 @@ from openpyxl import load_workbook
 import scipy.optimize as optimize
 import sympy as sp
 from mpl_toolkits.mplot3d import Axes3D
-plt.rcParams["font.family"] = "Times New Roman"
+import math
+
+
+plt.rcParams["font.family"] = "DeJavu Serif"
+plt.rcParams["font.serif"] = ["Times New Roman"]
 plt.rcParams.update({'font.size':8})
 
 Kt = 0.146
@@ -127,8 +131,8 @@ print(Pressure.shape)
 print(Angle.shape)
 print(Torque.shape)
 
-n_p = 10
-n_a = 10
+n_p = 1000
+n_a = 1000
 Pre = np.linspace(0, -50000 , n_p)
 
 ang = np.linspace(0 , np.pi/3, n_a)
@@ -140,16 +144,24 @@ Z = np.zeros_like(X)
 for i in range(n_p):
     print(i)
     for j in range(n_a):
+        zz  = equation.subs({p:X[i,j],phi:Y[i,j]}).evalf()
+        if math.isnan(zz):
+            continue
         Z[i, j] = equation.subs({p:X[i,j],phi:Y[i,j]}).evalf()
         X[i, j] += -5.94e+05 ** Z[i,j]**2 - 1.399e+05 * Z[i,j] - 485.6
 
+# Add a color bar
+#fig.colorbar(surf, ax=ax, shrink=0.5, aspect=5)
+
+
 fig=plt.figure(figsize=(8.49 / 2.54, 8.49 / 2.54))
-ax1 = Axes3D(fig,auto_add_to_figure=False)
+ax1 = Axes3D(fig)
 fig.add_axes(ax1)
 # ax = plt.figure().add_subplot(projection='3d')
 # ax.scatter(-Pressure, Angle, Torque,c=Torque,cmap='rainbow')
 ax1.scatter3D(-Pressure, Angle, Torque, c = Torque, cmap='rainbow', label='Experimental Data')
-ax1.scatter3D(X.ravel(), Y.ravel(), Z.ravel(), c=Z.ravel(), cmap='magma')
+#ax1.scatter3D(X.ravel(), Y.ravel(), Z.ravel(), c=Z.ravel(), cmap='magma')
+ax1.plot_surface(X, Y, Z, cmap='magma')
 
 ax1.set_ylim(0, 3)
 
