@@ -131,8 +131,8 @@ print(Pressure.shape)
 print(Angle.shape)
 print(Torque.shape)
 
-n_p = 1000
-n_a = 1000
+n_p = 10
+n_a = 10
 Pre = np.linspace(0, -50000 , n_p)
 
 ang = np.linspace(0 , np.pi/3, n_a)
@@ -148,7 +148,7 @@ for i in range(n_p):
         if math.isnan(zz):
             continue
         Z[i, j] = equation.subs({p:X[i,j],phi:Y[i,j]}).evalf()
-        X[i, j] += -5.94e+05 ** Z[i,j]**2 - 1.399e+05 * Z[i,j] - 485.6
+        X[i, j] += -5.94e+05 * Z[i,j]**2 - 1.399e+05 * Z[i,j] - 485.6
 
 # Add a color bar
 #fig.colorbar(surf, ax=ax, shrink=0.5, aspect=5)
