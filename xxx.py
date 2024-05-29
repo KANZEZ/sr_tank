@@ -1,12 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from openpyxl import load_workbook
+# from openpyxl import load_workbook
 import scipy.optimize as optimize
 import sympy as sp
 from mpl_toolkits.mplot3d import Axes3D
 import math
-
-
+import torch
+# from numba import jit, cuda 
+from matplotlib.lines import Line2D
 plt.rcParams["font.family"] = "DeJavu Serif"
 plt.rcParams["font.serif"] = ["Times New Roman"]
 plt.rcParams.update({'font.size':8})
@@ -46,11 +47,11 @@ V3 = np.sqrt(3) /2 * (h0 - u) *a**2
 V = V1 + V2 + V3 - (18.84*36.95*0.001*0.001*-np.cos(104.48*np.pi/180)*6*1.5*0.001)
 
 dV_dphi = sp.diff(V,phi)
-print(dV_dphi)
+# print(dV_dphi)
 equation = p*dV_dphi - dU_dphi 
 
 
-
+# f = sp.lambdify((p,phi),equation,'torch')
 
 angle1 = np.array([9.73,17.58,29.95,41.89,50.58,57.65,62.47,67.63,71.76,75.02,78.85])-9.73
 angle2 = np.array([9.91,18.78,31.1,43.4,52.68,59.35,64.36,68.52,72.58,76.32,78.62])-9.91
@@ -127,42 +128,113 @@ Pressure=np.concatenate((P0,P1,P2,P3,P4,P5,P6,P7,P8,P9,P10,P11,P12,P13,P14,P15))
 Angle=np.concatenate((angle0,angle1,angle2,angle3,angle4,angle5,angle6,angle7,angle8,angle9,angle10,angle11,angle12,angle13,angle14,angle15))/180*np.pi
 Torque=np.concatenate((Force0,Force1,Force2,Force3,Force4,Force5,Force6,Force7,Force8,Force9,Force10,Force11,Force12,Force13,Force14,Force15))/100*19/2/1000
 
-print(Pressure.shape)
-print(Angle.shape)
-print(Torque.shape)
+# print(Pressure.shape)
+# print(Angle.shape)
+# print(Torque.shape)
 
-n_p = 1000
-n_a = 1000
+n_p = 100
+n_a = 100
+
 Pre = np.linspace(0, -50000 , n_p)
 
 ang = np.linspace(0 , np.pi/3, n_a)
 
 X, Y = np.meshgrid(Pre, ang)
-print(X)
-print(Y)
+# print(X)
+# print(Y)
+X_list = []
+Y_list = []
+Z_list = []
+X_edited = []
+# X_tensor = torch.Tensor(X)
+# Y_tensor = torch.Tensor(Y)
+
+
 Z = np.zeros_like(X)
 for i in range(n_p):
-    print(i)
     for j in range(n_a):
         zz  = equation.subs({p:X[i,j],phi:Y[i,j]}).evalf()
+        # print(zz.type)
         if math.isnan(zz):
             continue
-        Z[i, j] = equation.subs({p:X[i,j],phi:Y[i,j]}).evalf()
-        X[i, j] += -5.94e+05 ** Z[i,j]**2 - 1.399e+05 * Z[i,j] - 485.6
+        Z[i, j] = zz
+        xx = X[i, j] + -5.94e+05 ** Z[i,j]**2 - 1.399e+05 * Z[i,j] - 485.6
+        if xx>-50000 and xx<0 and Y[i,j]>0 and Y[i,j]<1.0:
+            if not X[i,j] in X_list:
+                X_list.append(X[i,j]) 
+            if not Y[i,j] in Y_list:
+                Y_list.append(Y[i,j])
+            Z_list.append(Z[i,j])
+           
+        # print(X[i,j],"  ",Y[i,j],"  ",Z[i,j]) 
 
+X_list = np.asarray(X_list)
+Y_list = np.asarray(Y_list)
+Z_list = np.asarray(Z_list)
+X_list.sort()
+Y_list.sort()
+np.savetxt(fname="x.txt",X=X_list,fmt='%f')
+np.savetxt(fname="y.txt",X=Y_list,fmt='%f')
+np.savetxt(fname="z.txt",X=Z_list,fmt='%f')
+
+
+XXX, YYY = np.meshgrid(X_list, Y_list)
+
+ZZZ = np.zeros_like(XXX)
+for i in range(XXX.shape[0]):
+    # print(i)
+    for j in range(XXX.shape[1]):
+        zz  = equation.subs({p:XXX[i,j],phi:YYY[i,j]}).evalf()
+        if math.isnan(zz):
+            continue
+        ZZZ[i, j] = zz
+        XXX[i, j] += -5.94e+05 ** ZZZ[i,j]**2 - 1.399e+05 * ZZZ[i,j] - 485.6
 # Add a color bar
-#fig.colorbar(surf, ax=ax, shrink=0.5, aspect=5)
+# fig.colorbar(surf, ax=ax, shrink=0.5, aspect=5)
 
+# Z = f(X_tensor,Y_tensor)
+# print(X)
+# print(ang)
+# print(Z)
+x_lim = [-50000,0]
+y_lim = [0,1]
+z_lim = [-0.2,1]
+mask =  (XXX >= x_lim[0]) & (XXX <= x_lim[1]) & (YYY >= y_lim[0]) & (YYY <= y_lim[1]) & (ZZZ >= z_lim[0]) & (ZZZ <= z_lim[1]) 
+X_filtered = np.ma.masked_where(~mask, XXX) 
+Y_filtered = np.ma.masked_where(~mask, YYY)
+Z_filtered = np.ma.masked_where(~mask, ZZZ)
+
+
+mask2 = (Pressure>=0) & (Pressure<=50000) & (Angle>=0) & (Angle <=1) & (Torque>=-0.2) & (Torque<=1)
+pre_filter = np.ma.masked_where(~mask2,Pressure)
+ang_filter = np.ma.masked_where(~mask2,Angle)
+tor_filter = np.ma.masked_where(~mask2,Torque)
+
+
+plt.rcParams["font.family"] = "DeJavu Serif"
+plt.rcParams["font.serif"] = ["Times New Roman"]
+plt.rcParams.update({'font.size':8})
 
 fig=plt.figure(figsize=(8.49 / 2.54, 8.49 / 2.54))
 ax1 = Axes3D(fig)
 fig.add_axes(ax1)
+
 # ax = plt.figure().add_subplot(projection='3d')
 # ax.scatter(-Pressure, Angle, Torque,c=Torque,cmap='rainbow')
-ax1.scatter3D(-Pressure, Angle, Torque, c = Torque, cmap='rainbow', label='Experimental Data')
+ax1.scatter3D(-pre_filter/1000, ang_filter/np.pi*180, tor_filter, c = tor_filter, cmap='rainbow', label='Experimental Data')
 #ax1.scatter3D(X.ravel(), Y.ravel(), Z.ravel(), c=Z.ravel(), cmap='magma')
-ax1.plot_surface(X, Y, Z, cmap='magma')
+ax1.plot_surface(X_filtered/1000, Y_filtered/np.pi*180, Z_filtered, label='Theory' ,cmap='magma')
 
-ax1.set_ylim(0, 3)
+# plt.tight_layout()
+fig.suptitle('Theotical Plane of Actuators Dynamics and Experiment Data')
+ax1.set_ylim(0,60)
+ax1.set_ylabel('Angle (degree)')
+ax1.set_xlabel('Pressure (kPa)')
+ax1.set_zlabel('Torque (Nm)')
+ax1.set_xlim(-50,0)
 
+ax1.legend( loc='upper left', bbox_to_anchor=(0.1, 0.9))
+
+ax1.set_zlim(z_lim)
+# ax1.set_title('Theotical Plane of Actuators Dynamics and Experiment Data')
 plt.show()
