@@ -6,13 +6,21 @@
   <component name="ChangeListManager">
     <list default="true" id="6686e925-c36e-4741-8e66-364517efc9f7" name="更改" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Tank dis-P-verify.svg" beforeDir="false" afterPath="$PROJECT_DIR$/Tank dis-P-verify.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Track dis-P-verify.svg" beforeDir="false" afterPath="$PROJECT_DIR$/Track dis-P-verify.svg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/kinetic_verify_edited.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/kinetic_verify_edited.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xxx.py" beforeDir="false" afterPath="$PROJECT_DIR$/xxx.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -35,14 +43,15 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-1d06a55b98c1-91d5c284f522-JavaScript-PY-241.15989.155" />
-        <option value="bundled-python-sdk-babbdf50b680-7c6932dee5e4-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.15989.155" />
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-PY-241.17011.127" />
+        <option value="bundled-python-sdk-48aec45f0201-7e9c3bbb6e34-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.17011.127" />
       </set>
     </attachedChunks>
   </component>
@@ -56,7 +65,10 @@
       <updated>1716682366737</updated>
       <workItem from="1716682367882" duration="1035000" />
       <workItem from="1716683442155" duration="4457000" />
-      <workItem from="1716687937953" duration="4532000" />
+      <workItem from="1716687937953" duration="5006000" />
+      <workItem from="1716771473176" duration="164000" />
+      <workItem from="1716771676894" duration="4085000" />
+      <workItem from="1717113955887" duration="7918000" />
     </task>
     <servers />
   </component>
